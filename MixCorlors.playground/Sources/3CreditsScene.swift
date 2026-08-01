@@ -1,50 +1,26 @@
 import Foundation
-
-import Foundation
 import SpriteKit
 
-public class GameSceneCredits: SKScene{
-   // lazy var scene2 = GameScene(fileNamed: "GameScene")
+public class GameSceneCredits: SKScene {
+
+    // MARK: - Dependencies
+
+    /// Injected navigator; defaults to the shared singleton for production use.
+    public var navigator: SceneNavigating = SceneNavigator.shared
+
+    // MARK: - Scene Lifecycle
 
     override public func didMove(to view: SKView) {
-        print("entrei na tela de creditos")
-
-        
-  
+        // Credits scene is ready.
     }
 
-       
-       
-       public func touchDown(atPoint pos : CGPoint) {
-    
-       }
-       
-       public func touchMoved(toPoint pos : CGPoint) {
+    // MARK: - Touch Handling
 
-       }
-       
-       public func touchUp(atPoint pos : CGPoint) {
+    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        navigator.navigateToLogin(from: self)
+    }
 
-       }
-       
-       override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-         
-       }
-       
-       override public func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-          
-       }
-       
-       override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-           
-       }
-       
-       override public func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-         
-       }
-       
-       override public func update(_ currentTime: TimeInterval) {
-           // Called before each frame is rendered
-       }
-  
+    override public func update(_ currentTime: TimeInterval) {
+        // Reserved for per-frame updates.
+    }
 }
