@@ -2,59 +2,72 @@ import Foundation
 import SpriteKit
 
 public class LoginScene: SKScene {
-    lazy var gameSceneCredits = GameSceneCredits(fileNamed: "GameScene")
-    let header = SKSpriteNode(imageNamed: "loginHeader")
-    let btnInit = SKSpriteNode(imageNamed: "loginPlay")
-    let btnCredits = SKSpriteNode(imageNamed: "loginPlay")
-    let background = SKSpriteNode(imageNamed: "loginPaintBoard")
-    
+
+    // MARK: - Nodes
+
+    private let header     = SKSpriteNode(imageNamed: "loginHeader")
+    private let btnPlay    = SKSpriteNode(imageNamed: "loginPlay")
+    private let btnCredits = SKSpriteNode(imageNamed: "loginPlay")
+    private let background = SKSpriteNode(imageNamed: "loginPaintBoard")
+
+    // MARK: - Dependencies
+
+    /// Injected navigator; defaults to the shared singleton for production use.
+    public var navigator: SceneNavigating = SceneNavigator.shared
+
+    // MARK: - Scene Lifecycle
+
     override public func didMove(to view: SKView) {
-        createNode(node: header, name: "Logo", width: 100, height: 100, position: CGPoint(x: btnInit.position.x,
-                                                                                                       y: (((scene?.size.width)!) - (scene?.size.width)! / 2) * 0.2), zPosition: 1)
-        
-        createNode(node: btnInit, name: "Play", width: 300, height: 100, position: .zero, zPosition: 1)
-        print((scene?.size.width)! / 2)
-        createNode(node: btnCredits, name: "Credits", width: 300, height: 100, position: CGPoint(x: btnInit.position.x,
-                                                                                                 y: (((scene?.size.width)!) - (scene?.size.width)! / 2) * -0.2), zPosition: 1)
-        
-        createNode(node: background, name: "Lousa", width: 500, height: 700, position: .zero, zPosition: 0)
-        
+        setupNodes()
     }
-    
-    func present(nodeScene: GameSceneCredits){
-        nodeScene.scaleMode = .aspectFit
-        nodeScene.anchorPoint = .init(x: 0.5, y: 0.5)
-        scene?.view?.presentScene(nodeScene)
+
+    // MARK: - Setup
+
+    private func setupNodes() {
+        guard let sceneWidth = scene?.size.width else { return }
+        let verticalOffset = sceneWidth * 0.2
+
+        configure(background, name: "Lousa",
+                  size: CGSize(width: 500, height: 700),
+                  position: .zero, zPosition: 0)
+
+        configure(header, name: "Logo",
+                  size: CGSize(width: 100, height: 100),
+                  position: CGPoint(x: 0, y: verticalOffset), zPosition: 1)
+
+        configure(btnPlay, name: "Play",
+                  size: CGSize(width: 300, height: 100),
+                  position: .zero, zPosition: 1)
+
+        configure(btnCredits, name: "Credits",
+                  size: CGSize(width: 300, height: 100),
+                  position: CGPoint(x: 0, y: -verticalOffset), zPosition: 1)
     }
-    
-    func createNode(node: SKSpriteNode, name: String, width: Double, height: Double, position: CGPoint, zPosition: CGFloat){
+
+    private func configure(_ node: SKSpriteNode, name: String,
+                           size: CGSize, position: CGPoint, zPosition: CGFloat) {
         node.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        node.name = name
-        node.size = CGSize(width: width, height: height)
-        node.position = position
-        node.zPosition = zPosition
+        node.name       = name
+        node.size       = size
+        node.position   = position
+        node.zPosition  = zPosition
         addChild(node)
-        
-        
     }
-    
-    
+
+    // MARK: - Touch Handling
+
     override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            let p = touch.location(in: self)
-            if let nodeClicked = scene?.nodes(at: p).first {
-                print(nodeClicked.name ?? "")
-                print(nodeClicked.position)
-                if nodeClicked.name == btnInit.name{
-                    if let scene = gameSceneCredits {
-                        present(nodeScene: scene)
-                    }
-                    
-                    
-                }
-            }
-            
+        guard let touch = touches.first else { return }
+        let point    = touch.location(in: self)
+        let nodeName = scene?.nodes(at: point).first?.name
+
+        switch nodeName {
+        case btnPlay.name:
+            navigator.navigateToPlay(from: self)
+        case btnCredits.name:
+            navigator.navigateToCredits(from: self)
+        default:
+            break
         }
     }
-    
 }
